@@ -10,7 +10,7 @@ library(bibliometrix)
 library(igraph)
 
 #Estudo próprio
-
+bibliometrix::biblioshiny() #Abrir o biblioshiny
 
 # Carregar os dados (lembre-se de colocar o arquivo na pasta do diretório do R)
 file <- "savedrecs1.bib"  # Insira o nome do seu arquivo da forma que baixou
