@@ -3,18 +3,21 @@ installed.packages("ggplot2")
 installed.packages("dplyr")
 installed.packages("bibliometrix")
 installed.packages("igraph")
+installed.packages("openxlsx")
 #Carregar pacotes
 library(ggplot2)
 library(dplyr)
 library(bibliometrix)
 library(igraph)
+library(openxlsx)
 
 #Estudo próprio
-bibliometrix::biblioshiny() #Abrir o biblioshiny
+
+?convert2df #comando para acessar os dbsource e formatos do convert2df
 
 # Carregar os dados (lembre-se de colocar o arquivo na pasta do diretório do R)
 file <- "savedrecs1.bib"  # Insira o nome do seu arquivo da forma que baixou
-M <- convert2df(file, dbsource = "isi", format = "bibtex")  # Para Web of Science
+M <- convert2df(file, dbsource = "wos", format = "bibtex")  # Para Web of Science pode ser "wos" ou "isi"
 # M <- convert2df(file, dbsource = "scopus", format = "bibtex")  # Para Scopus
 com <- missingData(M)
 com$mandatoryTags
@@ -22,27 +25,8 @@ results <- biblioAnalysis(M, sep = ";")
 S <- summary(object = results, k = 10, pause = FALSE)
 
 #Manipulando os dados
-#Pesquisador de palavras
-library(dplyr)
-library(tidyr)
 
-# Acessar a tabela de frequências das palavras-chave
-palavras_chave_freq <- results$DE
-#DE = palavras-chave dos autores e ID = palavras-chave plus
-
-# Converter a tabela em um data.frame
-palavras_chave_df <- as.data.frame(palavras_chave_freq, 
-                                   stringsAsFactors = FALSE)
-colnames(palavras_chave_df) <- c("palavra", "freq")
-palavras_especificas <- c("lead", "nickel", "cadmium")
-
-# Filtrar as palavras-chave específicas
-contagem_especifica <- palavras_chave_df %>%
-  filter(tolower(palavra) %in% tolower(palavras_especificas))
-
-print(contagem_especifica) #Visualizar os dados
-
-#Os dez autores mais produtivos
+#OS DEZ AUTORES MAIS PRODUTIVOS
 top_authors <- S$MostProdAuthors
 top_authors <- as.data.frame(top_authors)
 colnames(top_authors) <- c("Author", "Articles")
@@ -64,7 +48,8 @@ ggplot(top_authors, aes(x = reorder(Author, Articles), y = Articles)) +
     panel.grid.minor = element_blank()   # Remove grades secundárias
   )
 #Se não gostar do theme_minimal pode trocar para theme_classic
-#Dez principais fontes
+
+#10 PRINCIPAIS FONTES (PERIÓDICOS)
 top_sources <- S$MostRelSources
 top_sources <- as.data.frame(top_sources)
 colnames(top_sources) <- c("Sources", "Articles")
@@ -86,7 +71,7 @@ ggplot(top_sources, aes(x = reorder(Sources, Articles), y = Articles)) +
     panel.grid.minor = element_blank()   # Remove grades secundárias
   )
 
-#Um gráfico de autores correspondentes
+#AUTORES CORRESPONDENTES
 top_country <- S$MostProdCountries
 top_country <- as.data.frame(top_country)
 colnames(top_country) <- c("Country", "Articles", "Freq", "SCP", "MCP", "MCPRatio")
@@ -125,7 +110,7 @@ ggplot(top_countries_long, aes(x = reorder(Country, Articles), y = Count, fill =
   )
 #SCP: Single Country Publications; MCP: Multiple Country Publications
 
-# Create a country collaboration network
+#COUNTRY COLLABORATION NETWORK
 
 M <- metaTagExtraction(M, Field = "AU_CO", sep = ";")
 NetMatrix <- biblioNetwork(M, analysis = "collaboration", network = "countries", sep = ";")
@@ -137,13 +122,9 @@ net=networkPlot(NetMatrix, n = 20, Title = "Colaboração Entre Países",
 #Tipos: circle, fruchterman, star, mds
 # n = dim(NetMatrix)[1]
 
-#Criar gráfico de produção científica
+#PRODUÇÃO CIENTÍFICA
 #Antes de plotar, aviso que a escala dele está personalizada aos meus dados
 #Se os eixos ficarem esquisitos, edite (scale_y_continuous e scale_x_continuous)
-library(extrafont)
-font_import() 
-y
-loadfonts(device = "win")
 
 df_year<-S$AnnualProduction%>%
   transmute(year=as.numeric(as.character(`Year   `)),
@@ -191,3 +172,23 @@ net=networkPlot(NetMatrix, normalize="association", weighted=T, n = 30, Title = 
 CS <- conceptualStructure(M,field="ID", method="MCA", minDegree=10, clust=5, stemming=FALSE, labelsize=15, documents=25, graph=FALSE)
 plot(CS$graph_terms)
 #ID = palavras-chave plus; DE = palavras-chave de autores
+
+#Pesquisador de palavras (para realizar wordcloud)
+library(dplyr)
+library(tidyr)
+
+# Acessar a tabela de frequências das palavras-chave
+palavras_chave_freq <- results$DE
+#DE = palavras-chave dos autores e ID = palavras-chave plus
+
+# Converter a tabela em um data.frame
+palavras_chave_df <- as.data.frame(palavras_chave_freq, 
+                                   stringsAsFactors = FALSE)
+colnames(palavras_chave_df) <- c("palavra", "freq")
+palavras_especificas <- c("lead", "nickel", "cadmium")
+
+# Filtrar as palavras-chave específicas
+contagem_especifica <- palavras_chave_df %>%
+  filter(tolower(palavra) %in% tolower(palavras_especificas))
+
+print(contagem_especifica) #Visualizar os dados
