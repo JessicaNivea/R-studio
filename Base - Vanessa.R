@@ -16,7 +16,7 @@ library(openxlsx)
 ?convert2df #comando para acessar os dbsource e formatos do convert2df
 
 # Carregar os dados (lembre-se de colocar o arquivo na pasta do diretório do R)
-file <- "savedrecs1.bib"  # Insira o nome do seu arquivo da forma que baixou
+file <- "savedrecs.bib"  # Insira o nome do seu arquivo da forma que baixou
 M <- convert2df(file, dbsource = "wos", format = "bibtex")  # Para Web of Science pode ser "wos" ou "isi"
 # M <- convert2df(file, dbsource = "scopus", format = "bibtex")  # Para Scopus
 com <- missingData(M)
