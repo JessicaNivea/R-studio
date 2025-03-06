@@ -192,3 +192,30 @@ contagem_especifica <- palavras_chave_df %>%
   filter(tolower(palavra) %in% tolower(palavras_especificas))
 
 print(contagem_especifica) #Visualizar os dados
+
+#EXEMPLO DE GRÁFICO PERSONALIZÁVEL
+valores_ex <- data.frame(
+  jornal = c("um","dois","três","quatro", "cinco", "seis", "sete", "oito", "nove"),
+  artigo = c(28,29,30,31,32,50,52,65,67)
+)
+#?geom_text
+ggplot(valores_ex, aes(x = reorder(valores_ex$jornal,artigo), y = valores_ex$artigo)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_text(aes(label = valores_ex$artigo),hjust = 0.5,vjust =-1, size = 4, color = "black") +
+  #geom_text(aes(label = valores_ex$dois),hjust = -0.2, size = 4, color = "black") +
+  #coord_flip() +
+  scale_y_continuous(limits = c (0,75), breaks = seq (0, 75, 15))+
+  labs(title = "TÍTULO",
+       x = "PERIÓDICOS",
+       y = "NÚMERO DE ARTIGOS") +
+  theme_classic() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),
+    axis.title = element_text(size = 16, face = "bold"),
+    axis.text = element_text(size = 16, color = "black"),
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    panel.grid.major = element_blank(),  # Remove grades principais
+    panel.grid.minor = element_blank()   # Remove grades secundárias
+  )
+
+
