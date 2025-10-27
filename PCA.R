@@ -6,11 +6,11 @@ library(factoextra)
 library(readxl)
 
 data <- read_excel("C:/Users/jessi/OneDrive/Área de Trabalho/teste.xlsx")
-head(teste)
+head(data)
 
 # Definir a coluna "fonte" como nome das linhas
-dados_pca <- teste[, -1]  
-rownames(dados_pca) <- teste$fonte 
+dados_pca <- data[, -1]  
+rownames(dados_pca) <- data$fonte 
 
 # Rodar o PCA
 pca.data <- PCA(dados_pca, scale.unit = TRUE, graph = FALSE)
@@ -47,7 +47,7 @@ fviz_pca_ind(pca.data, col.ind = "cos2",
              repel = TRUE,
              label = "var",
              geom.ind = "point")+
-  geom_text(aes(label = teste$fonte), 
+  geom_text(aes(label = data$fonte), 
             hjust = -0.1, 
             vjust = -0.1,
             size = 3,  # Reduz o tamanho da fonte
@@ -78,7 +78,7 @@ fviz_pca_biplot(pca.data, col.ind = "cos2",
                 repel = TRUE,
                 label = "var",
                 geom.ind = "point")+
-  geom_text(aes(label = teste$fonte), 
+  geom_text(aes(label = data$fonte), 
             hjust = -0.1, 
             vjust = -0.1,
             size = 3,  # Reduz o tamanho da fonte
