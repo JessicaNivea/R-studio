@@ -1,0 +1,238 @@
+library(meta)
+library(readxl)
+
+# Carregar os dados
+testemet <- read_excel("testemet.xlsx")
+
+# Verificar os nomes das colunas
+names(testemet)
+
+# Meta-análise de médias usando metamean
+meta_analysis_results <- metamean(
+  n = n,           # tamanho amostral
+  mean = M,        # média
+  sd = DP,         # desvio padrão
+  studlab = Autor, # identificação dos estudos
+  data = testemet,
+  sm = "MRAW",     # raw means (médias brutas)
+  random = TRUE,   # modelo de efeitos aleatórios
+  hakn = FALSE,     # ajuste de Hartung-Knapp
+  byvar = Subgroup     # subgrupos (se a coluna Nome existir)
+)
+
+# Visualizar resultados
+summary(meta_analysis_results)
+summa <- summary(meta_analysis_results)
+View(summa)
+# Forest plot
+forest(meta_analysis_results, 
+       xlab = "Média",
+       comb.random = TRUE,
+       comb.fixed = FALSE)
+
+# Se 'Nome' for sua variável de subgrupo:
+meta_subgroup <- update(meta_analysis_results, 
+                        byvar = Nome,
+                        comb.random = TRUE,
+                        comb.fixed = FALSE)
+
+# Forest plot com subgrupos
+forest(meta_subgroup)
+test <- read_excel("test.xlsx")
+
+
+# Carregar pacotes necessários
+library(readxl)
+library(ggplot2)
+library(dplyr)
+
+#Dados 
+dados <- read_excel("test.xlsx") %>%
+  mutate(Nome = factor(Nome, levels = rev(unique(Nome)))) # Ordenar corretamente
+
+dados$metal[1]
+
+ggplot(dados, aes(x = mean, y = Nome)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkred") +
+  geom_errorbarh(aes(xmin = a, xmax = b), 
+                 height = 0.2, color = "#288499", linewidth = 0.4) +
+  geom_point(aes (size = n), color = "#288499", fill = "#288499", shape = 21) + 
+  scale_x_continuous(
+   limits = c(-1, 5),     
+    breaks = seq(-1, 5, by = 2)
+  ) +
+  labs(title = paste (dados$metal[1],"(mg/kg)"),
+       x = "Mean - 95% CI",
+       y = "Sources",
+       size = "n") + 
+  theme_classic(base_size = 16) +
+  theme(
+    text = element_text(family = "Arial"),
+    plot.title = element_text(hjust = 0.5,size = 16,face = "bold"),
+    axis.text.x = element_text(color = "black"),      
+    axis.text.y = element_text(color = "black"), 
+    panel.grid.major.y = element_line(color = "white"),
+    panel.grid.minor = element_blank(),
+legend.position = "right", 
+legend.background = element_rect(fill = "white", color = NULL), 
+legend.title = element_text(face = "bold", size = 16, hjust = 0.5), 
+legend.text = element_text(size = 12, color = "black"),
+legend.key = element_rect(fill = "white", color = "white"),
+legend.spacing.x = unit(0.5, "cm"), 
+legend.margin = margin(10, 10, 10, 10)  
+) 
+ggsave("Cd_meta1.png", width = 8, height = 5, dpi = 300)
+
+#Dados - Metal Zn
+dados <- read_excel("test.xlsx") %>%
+  mutate(Nome = factor(Nome, levels = rev(unique(Nome)))) # Ordenar corretamente
+
+ggplot(dados, aes(x = mean, y = Nome)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkred") +
+  geom_errorbarh(aes(xmin = a, xmax = b), 
+                 height = 0.2, color = "#288499", linewidth = 0.4) +
+  geom_point(aes (size = k), color = "#288499", fill = "#288499", shape = 21) + 
+  scale_x_continuous(
+    limits = c(-10, 300),     
+    breaks = seq(-0, 300, by = 150)
+  ) +
+  labs(title = "Zinc (mg/kg)",
+       x = "Mean - 95%", 
+       y = "Sources",
+       size = "k") + 
+  theme_classic(base_size = 16) +
+  theme(
+    text = element_text(family = "Arial"),
+    plot.title = element_text(hjust = 0.5,size = 16,face = "bold"),
+    axis.text.x = element_text(color = "black"),      
+    axis.text.y = element_text(color = "black"), 
+    panel.grid.major.y = element_line(color = "white"),
+    panel.grid.minor = element_blank(),
+    legend.position = "right", 
+    legend.background = element_rect(fill = "white", color = NULL), 
+    legend.title = element_text(face = "bold", size = 16, hjust = 0.5), 
+    legend.text = element_text(size = 16, color = "black"),
+    legend.key = element_rect(fill = "white", color = "white"),
+    legend.spacing.x = unit(0.5, "cm"), 
+    legend.margin = margin(10, 10, 10, 10)  
+  ) 
+
+############################3
+#Dados - Metal Cu
+dados <- read_excel("test.xlsx") %>%
+  mutate(Nome = factor(Nome, levels = rev(unique(Nome)))) # Ordenar corretamente
+
+p <- ggplot(dados, aes(x = mean, y = Nome)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkred", size =0.8) +
+  geom_errorbarh(aes(xmin = a, xmax = b), 
+                 height = 0.2, color = "#288499", linewidth = 0.4) +
+  geom_point(aes (size = k), color = "#288499", fill = "#288499", shape = 21) + 
+  scale_x_continuous(
+    limits = c(-100, 300),     
+    breaks = seq(-100, 300, by = 100)
+  ) +
+  labs(title = "Copper (mg/kg)",
+       x = "Mean - 95% CI", 
+       y = "Sources",
+       size = "k") + 
+  theme_classic(base_size = 16) +
+  theme(
+    text = element_text(family = "Arial"),
+    plot.title = element_text(hjust = 0.5,size = 16,face = "bold"),
+    axis.text.x = element_text(color = "black"),
+    axis.line.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.y = element_text(color = "black"), 
+    panel.grid.major.y = element_line(color = "white"),
+    panel.grid.minor = element_blank(),
+    legend.position = "right", 
+    legend.background = element_rect(fill = "white", color = NULL), 
+    legend.title = element_text(face = "bold", size = 16, hjust = 0.5), 
+    legend.text = element_text(size = 12, color = "black"),
+    legend.key = element_rect(fill = "white", color = "white"),
+    legend.spacing.x = unit(0.5, "cm"), 
+    legend.margin = margin(10, 10, 10, 10)  
+  ) 
+p
+
+#Tabela Mean
+t1 <- ggplot(dados) +
+  geom_text(aes(y = Nome, x = 1, label = sprintf("%.2f", mean)), 
+            hjust = 0.5, size = 4) +
+  ggtitle("Mean") +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 12, hjust = 0.5, face = "bold"),
+    axis.text.y = element_blank(),  # Remove os rótulos do eixo Y
+    axis.title.y = element_blank(), # Remove o título do eixo Y
+    axis.ticks.y = element_blank() # Remove os ticks do eixo Y
+  ) +
+  scale_y_discrete(expand = c(0.15, 0.15)) # Ajusta o espaçamento
+t1
+
+
+#Tabela IC
+t2 <- ggplot(dados) +
+  geom_text(aes(y = Nome, x = 1, 
+                label = paste0(sprintf("%.2f", mean)," " ,"[", sprintf("%.2f", a), "; ",
+                               sprintf("%.2f", b), "]")), 
+            hjust = 0.5, size = 4) +
+  ggtitle("Mean - 95% CI") +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 12, hjust = 0.5, face = "bold"),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  scale_y_discrete(expand = c(0.15, 0.15))
+
+t2
+
+#tabelo tau2
+#Tabela Mean
+t3 <- ggplot(dados) +
+  geom_text(aes(y = Nome, x = 1, label = sprintf("%.0f", tau2)), 
+            hjust = 0.5, size = 4) +
+  ggtitle(expression(paste("τ" ^2))) +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 12, hjust = 0.5, face = "bold"),
+    axis.text.y = element_blank(),  # Remove os rótulos do eixo Y
+    axis.title.y = element_blank(), # Remove o título do eixo Y
+    axis.ticks.y = element_blank() # Remove os ticks do eixo Y
+  ) +
+  scale_y_discrete(expand = c(0.15, 0.15)) # Ajusta o espaçamento
+t3
+
+##
+library(grid)
+th <- sprintf(
+  "Heterogeneity: I² = %.1f%%, τ² = %.2f, p < %.4f", 
+  dados$I[1],      # Supondo que I² está na coluna I2
+  dados$tau_2[1],    # τ² na coluna tau2
+  dados$p[1]  # p-value na coluna p_value
+)
+
+t4 <- grid::textGrob(
+  th,
+  gp = gpar(fontsize = 12, col = "black"),
+  hjust = 0.5,
+  vjust = 0
+)
+
+#Merge plot and tables
+#The size of 1 (the plot) is biggest followed by size of 2 (Table 1) then 3 (Table 2)
+mlayout <- rbind(c(1,1,1,1,2,2),
+                 c(1,1,1,1,2,2),
+                 c(1,1,1,1,2,2),
+                 c(1,1,1,1,2,2),
+                 c(1,1,1,1,2,2),
+                 c(1,1,1,1,2,2),
+                 c(1,1,1,1,NA,NA),
+                 c(3,3,3,3,3,3))
+
+#Plot and tables together
+g <- grid.arrange(p, t2, t4, layout_matrix = mlayout)
+
+
