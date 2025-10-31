@@ -7,6 +7,11 @@ testemet <- read_excel("testemet.xlsx")
 # Verificar os nomes das colunas
 names(testemet)
 
+# Converter as colunas numéricas para o tipo correto
+testemet$n <- as.numeric(testemet$n)
+testemet$M <- as.numeric(testemet$M)
+testemet$DP <- as.numeric(testemet$DP)
+
 # Meta-análise de médias usando metamean
 meta_analysis_results <- metamean(
   n = n,           # tamanho amostral
@@ -56,12 +61,11 @@ ggplot(dados, aes(x = mean, y = Nome)) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "darkred") +
   geom_errorbarh(aes(xmin = a, xmax = b), 
                  height = 0.2, color = "#288499", linewidth = 0.4) +
-  geom_point(aes (size = n), color = "#288499", fill = "#288499", shape = 21) + 
-  scale_x_continuous(
-   limits = c(-1, 5),     
-    breaks = seq(-1, 5, by = 2)
-  ) +
-  labs(title = paste (dados$metal[1],"(mg/kg)"),
+  geom_point(aes (size = n), color = "#288499", fill = "#288499", shape = 22) + 
+  #scale_x_continuous(
+  # limits = c(-1, 5),     
+   # breaks = seq(-1, 5, by = 2)) +
+  labs(title = paste (dados$metal[1],"(p/kg)"),
        x = "Mean - 95% CI",
        y = "Sources",
        size = "n") + 
@@ -81,7 +85,7 @@ legend.key = element_rect(fill = "white", color = "white"),
 legend.spacing.x = unit(0.5, "cm"), 
 legend.margin = margin(10, 10, 10, 10)  
 ) 
-ggsave("Cd_meta1.png", width = 8, height = 5, dpi = 300)
+ggsave("Microplastic.png", width = 8, height = 5, dpi = 300)
 
 #Dados - Metal Zn
 dados <- read_excel("test.xlsx") %>%
@@ -234,5 +238,6 @@ mlayout <- rbind(c(1,1,1,1,2,2),
 
 #Plot and tables together
 g <- grid.arrange(p, t2, t4, layout_matrix = mlayout)
+
 
 
